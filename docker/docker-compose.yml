@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Docker container on port 5433)
+  postgres:
+    image: postgres:15-alpine
+    container_name: mnemophi-postgres
+    environment:
+      POSTGRES_DB: mnemophi
+      POSTGRES_USER: mnemophi
+      POSTGRES_PASSWORD: mnemophi_dev
+    ports:
+      - "5433:5432"  # Using port 5433 to avoid conflict with local PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - mnemophi-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mnemophi -d mnemophi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and sessions (Docker container on port 6380)
+  redis:
+    image: redis:7-alpine
+    container_name: mnemophi-redis
+    ports:
+      - "6380:6379"  # Using port 6380 to avoid conflict with local Redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - mnemophi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Service
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    container_name: mnemophi-backend
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=mnemophi
+      - DB_USER=mnemophi
+      - DB_PASSWORD=mnemophi_dev
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ENVIRONMENT=development
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../backend:/app/backend
+      - backend_cache:/app/backend/target
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mnemophi-network
+    restart: unless-stopped
+
+  # Frontend Dashboard
+  frontend-dashboard:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    container_name: mnemophi-dashboard
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../frontend/dashboard:/app/frontend/dashboard
+      - ../frontend/shared:/app/frontend/shared
+      - dashboard_node_modules:/app/frontend/dashboard/node_modules
+    working_dir: /app/frontend/dashboard
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - mnemophi-network
+    restart: unless-stopped
+
+  # Frontend User Page
+  frontend-userpage:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    container_name: mnemophi-userpage
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../frontend/userPage:/app/frontend/userPage
+      - ../frontend/shared:/app/frontend/shared
+      - userpage_node_modules:/app/frontend/userPage/node_modules
+    working_dir: /app/frontend/userPage
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - mnemophi-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (Optional - for production-like setup)
+  nginx:
+    image: nginx:alpine
+    container_name: mnemophi-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - frontend-dashboard
+      - frontend-userpage
+    networks:
+      - mnemophi-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_cache:
+  dashboard_node_modules:
+  userpage_node_modules:
+
+networks:
+  mnemophi-network:
+    driver: bridge
