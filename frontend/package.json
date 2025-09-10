@@ -1,0 +1,26 @@
+{
+  "name": "mnemophi-frontend",
+  "version": "1.0.0",
+  "description": "MnemoPhi Frontend Monorepo",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "dashboard",
+    "userPage"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:shared\" \"npm run dev:dashboard\" \"npm run dev:userpage\"",
+    "dev:shared": "cd shared && npm run dev",
+    "dev:dashboard": "cd dashboard && npm run dev",
+    "dev:userpage": "cd userPage && npm run dev",
+    "build": "npm run build:shared && npm run build:dashboard && npm run build:userpage",
+    "build:shared": "cd shared && npm run build",
+    "build:dashboard": "cd dashboard && npm run build",
+    "build:userpage": "cd userPage && npm run build",
+    "install:all": "npm install && cd shared && npm install && cd ../dashboard && npm install && cd ../userPage && npm install",
+    "clean": "rm -rf node_modules shared/node_modules dashboard/node_modules userPage/node_modules shared/dist dashboard/dist userPage/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
