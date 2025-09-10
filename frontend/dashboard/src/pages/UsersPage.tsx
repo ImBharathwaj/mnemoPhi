@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { 
   Search, 
   Download, 
-  Plus, 
   Users, 
   CheckCircle, 
   XCircle, 
   Clock,
   MoreVertical,
-  Eye,
-  Edit
+  Eye
 } from 'lucide-react'
 import { DashboardLayout } from '../components/DashboardLayout'
 
@@ -176,10 +174,6 @@ export function UsersPage() {
         <Download className="w-4 h-4 mr-2" />
         Export
       </button>
-      <button className="btn btn-primary">
-        <Plus className="w-4 h-4 mr-2" />
-        Add User
-      </button>
     </>
   )
 
@@ -321,12 +315,6 @@ export function UsersPage() {
                             title="View Details"
                           >
                             <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            className="text-gray-600 hover:text-gray-900"
-                            title="Edit User"
-                          >
-                            <Edit className="w-4 h-4" />
                           </button>
                           <button
                             className="text-gray-400 hover:text-gray-600"

@@ -1,14 +1,44 @@
+import { useState } from 'react'
 import { DashboardLayout } from '../components/DashboardLayout'
+import { Modal } from '../components/Modal'
+import { ReportGenerationForm } from '../components/ReportGenerationForm'
 import { Download, FileText, Calendar, Filter } from 'lucide-react'
 
 export function ReportsPage() {
+  const [showGenerateModal, setShowGenerateModal] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const handleGenerateReport = async (data: any) => {
+    setIsGenerating(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      console.log('Generating report with data:', data)
+      
+      // In a real app, you would call your API here
+      // await generateReport(data)
+      
+      // Close modal and show success message
+      setShowGenerateModal(false)
+      alert(`Report generated successfully! ${data.emailNotification ? 'You will receive an email when ready.' : ''}`)
+    } catch (error) {
+      console.error('Error generating report:', error)
+      alert('Error generating report. Please try again.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const headerActions = (
     <div className="flex space-x-3">
       <button className="btn btn-outline">
         <Filter className="w-4 h-4 mr-2" />
         Filter
       </button>
-      <button className="btn btn-primary">
+      <button 
+        onClick={() => setShowGenerateModal(true)}
+        className="btn btn-primary"
+      >
         <Download className="w-4 h-4 mr-2" />
         Generate Report
       </button>
@@ -215,6 +245,20 @@ export function ReportsPage() {
           </div>
         </div>
       </div>
+
+      {/* Generate Report Modal */}
+      <Modal
+        isOpen={showGenerateModal}
+        onClose={() => setShowGenerateModal(false)}
+        title="Generate Report"
+        size="md"
+      >
+        <ReportGenerationForm
+          onSubmit={handleGenerateReport}
+          onCancel={() => setShowGenerateModal(false)}
+          isLoading={isGenerating}
+        />
+      </Modal>
     </DashboardLayout>
   )
 }

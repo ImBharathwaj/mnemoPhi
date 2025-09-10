@@ -12,6 +12,8 @@ import {
   Settings
 } from 'lucide-react'
 import { DashboardLayout } from '../components/DashboardLayout'
+import { Modal } from '../components/Modal'
+import { ConsentCategoryForm } from '../components/ConsentCategoryForm'
 
 // Mock consent categories data - in real app this would come from API
 const mockCategories = [
@@ -100,6 +102,7 @@ export function ConsentCategoriesPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [sortBy, setSortBy] = useState('name')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   const filteredCategories = mockCategories.filter(category => {
     const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -156,6 +159,28 @@ export function ConsentCategoriesPage() {
     if (!isActive) return 'Inactive'
     if (isRequired) return 'Required'
     return 'Optional'
+  }
+
+  const handleCreateCategory = async (data: any) => {
+    setIsCreating(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Creating consent category:', data)
+      
+      // In a real app, you would call your API here
+      // await createConsentCategory(data)
+      
+      // Close modal and show success message
+      setShowCreateModal(false)
+      // You could add a toast notification here
+      alert('Consent category created successfully!')
+    } catch (error) {
+      console.error('Error creating consent category:', error)
+      alert('Error creating consent category. Please try again.')
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   const headerActions = (
@@ -406,29 +431,19 @@ export function ConsentCategoriesPage() {
         </div>
       </div>
 
-      {/* Create Category Modal Placeholder */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg font-medium text-gray-900">Create New Category</h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Category creation form would go here.
-                </p>
-              </div>
-              <div className="items-center px-4 py-3">
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 bg-primary-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Create Category Modal */}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create New Consent Category"
+        size="sm"
+      >
+        <ConsentCategoryForm
+          onSubmit={handleCreateCategory}
+          onCancel={() => setShowCreateModal(false)}
+          isLoading={isCreating}
+        />
+      </Modal>
     </DashboardLayout>
   )
 }

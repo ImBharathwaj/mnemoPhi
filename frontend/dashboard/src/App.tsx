@@ -1,17 +1,21 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
 import { useAuthStore } from '@mnemophi/shared'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
-import { DashboardPage } from './pages/DashboardPage'
-import { AdvancedAnalyticsPage } from './pages/AdvancedAnalyticsPage'
-import { SystemConfigPage } from './pages/SystemConfigPage'
-import { UsersPage } from './pages/UsersPage'
-import { UserDetailPage } from './pages/UserDetailPage'
-import { ConsentCategoriesPage } from './pages/ConsentCategoriesPage'
-import { ReportsPage } from './pages/ReportsPage'
-import { SettingsPage } from './pages/SettingsPage'
-import { ComponentsPage } from './pages/ComponentsPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { LoadingSpinner } from './components/LoadingSpinner'
+
+// Lazy load pages for better performance
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const AdvancedAnalyticsPage = lazy(() => import('./pages/AdvancedAnalyticsPage').then(m => ({ default: m.AdvancedAnalyticsPage })))
+const SystemConfigPage = lazy(() => import('./pages/SystemConfigPage').then(m => ({ default: m.SystemConfigPage })))
+const UsersPage = lazy(() => import('./pages/UsersPage').then(m => ({ default: m.UsersPage })))
+const UserDetailPage = lazy(() => import('./pages/UserDetailPage').then(m => ({ default: m.UserDetailPage })))
+const ConsentCategoriesPage = lazy(() => import('./pages/ConsentCategoriesPage').then(m => ({ default: m.ConsentCategoriesPage })))
+const ReportsPage = lazy(() => import('./pages/ReportsPage').then(m => ({ default: m.ReportsPage })))
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })))
+const ComponentsPage = lazy(() => import('./pages/ComponentsPage').then(m => ({ default: m.ComponentsPage })))
 
 function App() {
   const { isAuthenticated } = useAuthStore()
@@ -28,7 +32,9 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <DashboardPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -36,7 +42,9 @@ function App() {
           path="/analytics"
           element={
             <ProtectedRoute>
-              <AdvancedAnalyticsPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <AdvancedAnalyticsPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -44,7 +52,9 @@ function App() {
           path="/system"
           element={
             <ProtectedRoute>
-              <SystemConfigPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <SystemConfigPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -52,7 +62,9 @@ function App() {
           path="/users"
           element={
             <ProtectedRoute>
-              <UsersPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <UsersPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -60,7 +72,9 @@ function App() {
           path="/users/:userId"
           element={
             <ProtectedRoute>
-              <UserDetailPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <UserDetailPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -68,7 +82,9 @@ function App() {
           path="/consents"
           element={
             <ProtectedRoute>
-              <ConsentCategoriesPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <ConsentCategoriesPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -76,7 +92,9 @@ function App() {
           path="/reports"
           element={
             <ProtectedRoute>
-              <ReportsPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <ReportsPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -84,7 +102,9 @@ function App() {
           path="/settings"
           element={
             <ProtectedRoute>
-              <SettingsPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <SettingsPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />
@@ -92,7 +112,9 @@ function App() {
           path="/components"
           element={
             <ProtectedRoute>
-              <ComponentsPage />
+              <Suspense fallback={<LoadingSpinner />}>
+                <ComponentsPage />
+              </Suspense>
             </ProtectedRoute>
           }
         />

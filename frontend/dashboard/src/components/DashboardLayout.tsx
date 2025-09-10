@@ -26,6 +26,7 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   console.log('DashboardLayout rendering, user:', user)
+  console.log('Current pathname:', location.pathname)
 
   const navigationItems = [
     { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -42,13 +43,13 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
+      <div className="w-64 bg-white shadow-lg flex flex-col fixed left-0 top-0 h-screen z-10">
         <div className="p-6">
           <h2 className="text-xl font-bold text-gray-900">MnemoPhi</h2>
           <p className="text-sm text-gray-600">Business Dashboard</p>
         </div>
         
-        <nav className="mt-6">
+        <nav className="mt-6 flex-1">
           <div className="px-3">
             {navigationItems.map((item) => (
               <button
@@ -67,7 +68,8 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
           </div>
         </nav>
 
-        <div className="mt-8 px-3">
+        {/* User Profile Section - Moved to bottom */}
+        <div className="p-3 border-t border-gray-200">
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
@@ -91,7 +93,7 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-64">
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="px-6 py-4">
@@ -120,7 +122,7 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-y-auto">
           {children}
         </div>
       </div>
