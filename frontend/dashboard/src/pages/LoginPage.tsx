@@ -105,13 +105,28 @@ export function LoginPage() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-3">
             <button
               type="submit"
               disabled={isLoading}
               className="btn btn-primary w-full"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setFormData({
+                  email: 'admin@mnemophi.com',
+                  password: 'password',
+                  rememberMe: false,
+                });
+                handleSubmit(new Event('submit') as any);
+              }}
+              className="btn btn-outline w-full"
+            >
+              Quick Login (Demo)
             </button>
           </div>
           

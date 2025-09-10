@@ -7,7 +7,7 @@ export function ComponentsPage() {
   const [inputValue, setInputValue] = useState('')
 
   const handleShowNotification = (type: 'success' | 'error' | 'warning' | 'info') => {
-    toast[type](`This is a ${type} notification!`)
+    ;(toast as any)[type](`This is a ${type} notification!`)
   }
 
   return (
