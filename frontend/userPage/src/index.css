@@ -8,13 +8,6 @@
     --foreground: #171717;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
-    }
-  }
-
   body {
     background: var(--background);
     color: var(--foreground);
@@ -41,6 +34,14 @@
 
   .btn-ghost {
     @apply hover:bg-gray-100 px-4 py-2;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 px-4 py-2;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
   }
 
   .input {
