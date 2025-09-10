@@ -6,8 +6,11 @@ import {
   TrendingUp, 
   Shield, 
   FileText,
-  Settings
+  Settings,
+  Menu,
+  X
 } from 'lucide-react'
+import { useState } from 'react'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -20,6 +23,7 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   console.log('DashboardLayout rendering, user:', user)
 
@@ -29,6 +33,7 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
     { path: '/users', label: 'Users', icon: Users },
     { path: '/consents', label: 'Consents', icon: Shield },
     { path: '/reports', label: 'Reports', icon: FileText },
+    { path: '/system', label: 'System Config', icon: Settings },
     { path: '/settings', label: 'Settings', icon: Settings }
   ]
 
@@ -91,15 +96,25 @@ export function DashboardLayout({ children, title, subtitle, headerActions }: Da
         <div className="bg-white shadow-sm border-b">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-                {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-              </div>
-              {headerActions && (
-                <div className="flex items-center space-x-3">
-                  {headerActions}
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                >
+                  {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+                  {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
                 </div>
-              )}
+              </div>
+              <div className="flex items-center space-x-4">
+                {headerActions && (
+                  <div className="flex items-center space-x-3">
+                    {headerActions}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

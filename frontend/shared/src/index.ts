@@ -18,5 +18,6 @@ export { ComplianceMetricsComponent } from './components/analytics/ComplianceMet
 export { GeographicDistribution } from './components/analytics/GeographicDistribution';
 export { ReportBuilder } from './components/analytics/ReportBuilder';
 
-// Styles
-import './index.css';
+// Advanced Components
+export { NotificationCenter, useNotifications } from './components/NotificationCenter';
+export { GlobalSearch, useGlobalSearch } from './components/GlobalSearch';
