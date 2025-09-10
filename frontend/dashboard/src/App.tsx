@@ -3,7 +3,8 @@ import { useAuthStore } from '@mnemophi/shared'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { DashboardPage } from './pages/DashboardPage'
-import { AnalyticsPage } from './pages/AnalyticsPage'
+import { AdvancedAnalyticsPage } from './pages/AdvancedAnalyticsPage'
+import { SystemConfigPage } from './pages/SystemConfigPage'
 import { UsersPage } from './pages/UsersPage'
 import { UserDetailPage } from './pages/UserDetailPage'
 import { ConsentCategoriesPage } from './pages/ConsentCategoriesPage'
@@ -35,7 +36,15 @@ function App() {
           path="/analytics"
           element={
             <ProtectedRoute>
-              <AnalyticsPage />
+              <AdvancedAnalyticsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/system"
+          element={
+            <ProtectedRoute>
+              <SystemConfigPage />
             </ProtectedRoute>
           }
         />
