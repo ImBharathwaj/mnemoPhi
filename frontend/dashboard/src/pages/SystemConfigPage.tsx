@@ -1,5 +1,9 @@
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { DashboardLayout } from '../components/DashboardLayout'
+import { Modal } from '../components/Modal'
+import { ApiKeyEditForm } from '../components/ApiKeyEditForm'
+import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal'
 import { 
   Key, 
   Settings, 
@@ -8,6 +12,7 @@ import {
   Edit, 
   Trash2, 
   Copy, 
+  Check,
   Eye, 
   EyeOff,
   Download,
@@ -19,8 +24,17 @@ export function SystemConfigPage() {
   const [activeTab, setActiveTab] = useState('api-keys')
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [showApiKey, setShowApiKey] = useState<{ [key: string]: boolean }>({})
+  const [copiedKeys, setCopiedKeys] = useState<{ [key: string]: boolean }>({})
   const [newKeyName, setNewKeyName] = useState('')
   const [newKeyPermissions, setNewKeyPermissions] = useState<string[]>([])
+  
+  // Edit and Delete modal states
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [editingApiKey, setEditingApiKey] = useState<any>(null)
+  const [deletingApiKey, setDeletingApiKey] = useState<any>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Mock data for API keys
   const [apiKeys, setApiKeys] = useState([
@@ -155,15 +169,97 @@ export function SystemConfigPage() {
     }, 1000)
   }
 
-  const handleDeleteKey = (keyId: string) => {
-    if (window.confirm('Are you sure you want to delete this API key?')) {
-      setApiKeys(prev => prev.filter(key => key.id !== keyId))
+  const handleEditKey = (apiKey: any) => {
+    setEditingApiKey(apiKey)
+    setShowEditModal(true)
+  }
+
+  const handleDeleteKey = (apiKey: any) => {
+    setDeletingApiKey(apiKey)
+    setShowDeleteModal(true)
+  }
+
+  const handleEditSubmit = async (data: any) => {
+    setIsEditing(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Update the API key in the state
+      setApiKeys(prev => prev.map(key => 
+        key.id === editingApiKey.id 
+          ? { ...key, ...data }
+          : key
+      ))
+      
+      setShowEditModal(false)
+      setEditingApiKey(null)
+      toast.success('API key updated successfully!')
+    } catch (error) {
+      console.error('Error updating API key:', error)
+      toast.error('Error updating API key. Please try again.')
+    } finally {
+      setIsEditing(false)
     }
   }
 
-  const handleCopyKey = (key: string) => {
-    navigator.clipboard.writeText(key)
-    // You could add a toast notification here
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Remove the API key from the state
+      setApiKeys(prev => prev.filter(key => key.id !== deletingApiKey.id))
+      
+      setShowDeleteModal(false)
+      setDeletingApiKey(null)
+      toast.success('API key deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting API key:', error)
+      toast.error('Error deleting API key. Please try again.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleCopyKey = async (key: string, keyId: string) => {
+    try {
+      await navigator.clipboard.writeText(key)
+      
+      // Show success toast
+      toast.success('API key copied to clipboard!', {
+        duration: 2000,
+        position: 'top-right',
+      })
+      
+      // Show visual feedback on button
+      setCopiedKeys(prev => ({ ...prev, [keyId]: true }))
+      
+      // Reset the visual feedback after 2 seconds
+      setTimeout(() => {
+        setCopiedKeys(prev => ({ ...prev, [keyId]: false }))
+      }, 2000)
+      
+    } catch (error) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = key
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      
+      toast.success('API key copied to clipboard!', {
+        duration: 2000,
+        position: 'top-right',
+      })
+      
+      setCopiedKeys(prev => ({ ...prev, [keyId]: true }))
+      setTimeout(() => {
+        setCopiedKeys(prev => ({ ...prev, [keyId]: false }))
+      }, 2000)
+    }
   }
 
   const handleToggleKeyVisibility = (keyId: string) => {
@@ -345,10 +441,19 @@ export function SystemConfigPage() {
                                 {showApiKey[apiKey.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                               </button>
                               <button
-                                onClick={() => handleCopyKey(apiKey.key)}
-                                className="text-gray-400 hover:text-gray-600"
+                                onClick={() => handleCopyKey(apiKey.key, apiKey.id)}
+                                className={`transition-colors duration-200 ${
+                                  copiedKeys[apiKey.id] 
+                                    ? 'text-green-600 hover:text-green-700' 
+                                    : 'text-gray-400 hover:text-gray-600'
+                                }`}
+                                title={copiedKeys[apiKey.id] ? 'Copied!' : 'Copy API key'}
                               >
-                                <Copy className="h-4 w-4" />
+                                {copiedKeys[apiKey.id] ? (
+                                  <Check className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
                               </button>
                             </div>
                             <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
@@ -369,12 +474,15 @@ export function SystemConfigPage() {
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <button className="btn btn-outline btn-sm">
+                            <button 
+                              onClick={() => handleEditKey(apiKey)}
+                              className="btn btn-outline btn-sm"
+                            >
                               <Edit className="h-4 w-4 mr-1" />
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteKey(apiKey.id)}
+                              onClick={() => handleDeleteKey(apiKey)}
                               className="btn btn-outline btn-sm text-red-600 hover:text-red-700"
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
@@ -547,6 +655,43 @@ export function SystemConfigPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit API Key Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+          setEditingApiKey(null)
+        }}
+        title="Edit API Key"
+        size="md"
+      >
+        {editingApiKey && (
+          <ApiKeyEditForm
+            apiKey={editingApiKey}
+            onSubmit={handleEditSubmit}
+            onCancel={() => {
+              setShowEditModal(false)
+              setEditingApiKey(null)
+            }}
+            isLoading={isEditing}
+          />
+        )}
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setDeletingApiKey(null)
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete API Key"
+        message="Are you sure you want to delete this API key? This action cannot be undone."
+        itemName={deletingApiKey?.name}
+        isLoading={isDeleting}
+      />
     </DashboardLayout>
   )
 }

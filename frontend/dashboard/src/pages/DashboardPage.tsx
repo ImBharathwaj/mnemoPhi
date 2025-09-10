@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAuthStore } from '@mnemophi/shared'
 import { 
   CheckCircle, 
@@ -10,15 +11,44 @@ import {
   FileText
 } from 'lucide-react'
 import { DashboardLayout } from '../components/DashboardLayout'
+import { Modal } from '../components/Modal'
+import { ConsentCategoryForm } from '../components/ConsentCategoryForm'
 
 export function DashboardPage() {
   const { user } = useAuthStore()
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   console.log('DashboardPage rendering, user:', user)
 
+  const handleCreateCategory = async (data: any) => {
+    setIsCreating(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Creating consent category:', data)
+      
+      // In a real app, you would call your API here
+      // await createConsentCategory(data)
+      
+      // Close modal and show success message
+      setShowCreateModal(false)
+      // You could add a toast notification here
+      alert('Consent category created successfully!')
+    } catch (error) {
+      console.error('Error creating consent category:', error)
+      alert('Error creating consent category. Please try again.')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   const headerActions = (
     <>
-      <button className="btn btn-primary">
+      <button 
+        onClick={() => setShowCreateModal(true)}
+        className="btn btn-primary"
+      >
         <Plus className="w-4 h-4 mr-2" />
         Add Consent Category
       </button>
@@ -145,6 +175,20 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Create Consent Category Modal */}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create New Consent Category"
+        size="sm"
+      >
+        <ConsentCategoryForm
+          onSubmit={handleCreateCategory}
+          onCancel={() => setShowCreateModal(false)}
+          isLoading={isCreating}
+        />
+      </Modal>
     </DashboardLayout>
   )
 }
