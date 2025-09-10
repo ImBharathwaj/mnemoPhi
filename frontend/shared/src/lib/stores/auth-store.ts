@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, LoginRequest, RegisterRequest } from '@/types';
-import { authService } from '@/lib/api-services';
 
 interface AuthState {
   user: User | null;
@@ -39,11 +38,21 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await authService.login(data);
+          // Mock authentication for development
+          const mockUser: User = {
+            id: '1',
+            email: data.email,
+            firstName: 'John',
+            lastName: 'Doe',
+            role: 'admin',
+            createdAt: new Date().toISOString(),
+          };
+          
+          const mockToken = 'mock-jwt-token-' + Date.now();
           
           set({
-            user: response.user,
-            token: response.token,
+            user: mockUser,
+            token: mockToken,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -61,11 +70,21 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await authService.register(data);
+          // Mock registration for development
+          const mockUser: User = {
+            id: '2',
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            role: 'user',
+            createdAt: new Date().toISOString(),
+          };
+          
+          const mockToken = 'mock-jwt-token-' + Date.now();
           
           set({
-            user: response.user,
-            token: response.token,
+            user: mockUser,
+            token: mockToken,
             isAuthenticated: true,
             isLoading: false,
             error: null,

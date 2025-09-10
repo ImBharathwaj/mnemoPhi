@@ -1,3 +1,6 @@
+// Analytics types
+export * from './analytics';
+
 export interface User {
   id: string;
   email: string;
