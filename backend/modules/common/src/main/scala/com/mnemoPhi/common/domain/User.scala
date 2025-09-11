@@ -15,4 +15,7 @@ case class User(
 object User {
   implicit val userEncoder: Encoder[User] = deriveEncoder[User]
   implicit val userDecoder: Decoder[User] = deriveDecoder[User]
+  
+  def tupled = (User.apply _).tupled
+  def unapply(user: User) = Some((user.id, user.email, user.metadata, user.createdAt))
 }

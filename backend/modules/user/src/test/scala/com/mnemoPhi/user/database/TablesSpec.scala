@@ -1,4 +1,4 @@
-package com.mnemoPhi.common.database
+package com.mnemoPhi.user.database
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

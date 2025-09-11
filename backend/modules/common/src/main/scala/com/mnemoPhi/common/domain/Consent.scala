@@ -34,4 +34,7 @@ case class Consent(
 object Consent {
   implicit val consentEncoder: Encoder[Consent] = deriveEncoder[Consent]
   implicit val consentDecoder: Decoder[Consent] = deriveDecoder[Consent]
+  
+  def tupled = (Consent.apply _).tupled
+  def unapply(consent: Consent) = Some((consent.id, consent.userId, consent.clientId, consent.category, consent.status, consent.timestamp))
 }

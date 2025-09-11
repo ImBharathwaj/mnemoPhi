@@ -16,4 +16,7 @@ case class Client(
 object Client {
   implicit val clientEncoder: Encoder[Client] = deriveEncoder[Client]
   implicit val clientDecoder: Decoder[Client] = deriveDecoder[Client]
+  
+  def tupled = (Client.apply _).tupled
+  def unapply(client: Client) = Some((client.id, client.name, client.email, client.apiKey, client.createdAt))
 }

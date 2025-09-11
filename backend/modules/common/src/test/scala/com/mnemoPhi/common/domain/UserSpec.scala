@@ -12,7 +12,7 @@ class UserSpec extends AnyFlatSpec with Matchers {
   "User" should "create a valid user with required fields" in {
     val userId = UUID.randomUUID()
     val email = "test@example.com"
-    val metadata = Map("name" -> "John Doe", "age" -> 25)
+    val metadata = Map("name" -> "John Doe", "age" -> "25")
     val createdAt = Instant.now()
     
     val user = User(
