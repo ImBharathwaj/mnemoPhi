@@ -1,4 +1,4 @@
-package com.mnemoPhi.common.database
+package com.mnemoPhi.user.database
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 
 class DatabaseConnectionSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
-  var db: Database = _
+  var db: slick.jdbc.JdbcBackend.Database = _
   var config: DatabaseConfig = _
 
   override def beforeAll(): Unit = {
@@ -46,12 +46,12 @@ class DatabaseConnectionSpec extends AnyFlatSpec with Matchers with BeforeAndAft
   it should "create tables successfully" in {
     val createTables = Tables.schema.create
     val result = Await.result(db.run(createTables), 10.seconds)
-    result should not be null
+    result shouldBe ()
   }
 
   it should "drop tables successfully" in {
     val dropTables = Tables.schema.drop
     val result = Await.result(db.run(dropTables), 10.seconds)
-    result should not be null
+    result shouldBe ()
   }
 }

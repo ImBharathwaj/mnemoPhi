@@ -22,7 +22,7 @@ lazy val common = (project in file("modules/common"))
       "com.typesafe" % "config" % "1.4.3",
       
       // Logging
-      "ch.qos.logback" % "logback-classic" % "1.4.14",
+      "ch.qos.logback" % "logback-classic" % "1.2.12",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
       
       // UUID generation
@@ -34,8 +34,7 @@ lazy val common = (project in file("modules/common"))
       
       // Testing
       "org.scalatest" %% "scalatest" % "3.2.17" % Test,
-      "org.scalatestplus" %% "scalacheck-1-17" % "3.2.17.0" % Test,
-      "org.scalamock" %% "scalamock" % "5.2.0" % Test
+      "org.scalatestplus" %% "scalacheck-1-17" % "3.2.17.0" % Test
     )
   )
 
@@ -109,7 +108,7 @@ ThisBuild / scalacOptions ++= Seq(
 ThisBuild / Test / fork := true
 ThisBuild / Test / parallelExecution := false
 
-// Docker settings
-enablePlugins(DockerPlugin)
-Docker / packageName := "mnemophi-backend"
-Docker / version := "latest"
+// Docker settings (commented out for now)
+// enablePlugins(DockerPlugin)
+// Docker / packageName := "mnemophi-backend"
+// Docker / version := "latest"

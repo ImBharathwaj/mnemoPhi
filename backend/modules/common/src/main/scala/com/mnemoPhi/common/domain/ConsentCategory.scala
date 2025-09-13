@@ -14,4 +14,7 @@ case class ConsentCategory(
 object ConsentCategory {
   implicit val consentCategoryEncoder: Encoder[ConsentCategory] = deriveEncoder[ConsentCategory]
   implicit val consentCategoryDecoder: Decoder[ConsentCategory] = deriveDecoder[ConsentCategory]
+  
+  def tupled = (ConsentCategory.apply _).tupled
+  def unapply(category: ConsentCategory) = Some((category.id, category.category, category.createdAt))
 }

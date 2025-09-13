@@ -1,7 +1,7 @@
-package com.mnemoPhi.common.database
+package com.mnemoPhi.user.database
 
 import com.mnemoPhi.common.config.DatabaseConfig
-import com.typesafe.slick.dbslick.Database
+import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 

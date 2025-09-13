@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.CORS
+import akka.http.scaladsl.model.headers._
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 import scala.concurrent.ExecutionContext
@@ -20,7 +20,12 @@ class HttpServer(system: ActorSystem[_]) extends LazyLogging {
   private val port = config.getInt("server.port")
 
   val routes: Route = {
-    CORS() {
+    respondWithHeaders(
+      `Access-Control-Allow-Origin`.*,
+      `Access-Control-Allow-Methods`(HttpMethods.GET, HttpMethods.POST, HttpMethods.PUT, HttpMethods.DELETE, HttpMethods.OPTIONS),
+      `Access-Control-Allow-Headers`("Content-Type", "Authorization", "X-API-Key"),
+      `Access-Control-Allow-Credentials`(true)
+    ) {
       pathPrefix("api" / "v1") {
         healthRoute ~
         rootRoute
